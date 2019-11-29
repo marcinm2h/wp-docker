@@ -16,6 +16,11 @@ docker-compose up -d
 docker-compose down
 ```
 
+## down + clean db
+```
+docker-compose down --volumes
+```
+
 ## list containers
 ```
 docker ps
