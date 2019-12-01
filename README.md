@@ -51,3 +51,24 @@ docker exec -it [your_container_name] /bin/bash
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
 ```
+
+# MySql help
+
+## login to container
+
+```
+docker-compose exec db bash
+```
+
+## login to mysql
+
+```
+mysql -u [username] -p
+```
+
+## show tables
+
+```
+use [dababase];
+show tables;
+```
