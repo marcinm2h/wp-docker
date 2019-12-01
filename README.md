@@ -7,6 +7,8 @@
 
 - pull git repo
 - setup .env files (copy example.env to .env for a start)
+- chose your config (.dev - remote database, or .prod - local database)
+- start project with `docker-compose up -d`
 
 # Deployment
 
