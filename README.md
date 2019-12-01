@@ -70,5 +70,6 @@ mysql -u [username] -p
 
 ```
 use [dababase];
-show tables;
+show tables; # tables names
+describe wp_posts; # table schema
 ```
