@@ -42,7 +42,7 @@ docker ps
 ## bash on container
 
 ```
-docker exec -it my_wordpress_wordpress_1 /bin/bash
+docker exec -it [your_container_name] /bin/bash
 ```
 
 ## stop / remove all
