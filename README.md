@@ -2,7 +2,7 @@
 # Development
 
 - pull git repo
-- setup .evn files
+- setup .evn files (copy example.env to .env for a start)
 - push do origin
 - to deploy -> change pull on server
 
