@@ -10,7 +10,9 @@
 
 # Deployment
 
-change pull on server
+- commit changes
+- push to origin
+- checkount on the new change on the server
 
 # Docker help
 
