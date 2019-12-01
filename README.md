@@ -1,3 +1,6 @@
+# Requirements
+- Docker
+- Docker Compose
 
 # Development
 
