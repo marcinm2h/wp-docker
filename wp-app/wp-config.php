@@ -1,4 +1,7 @@
 <?php
+// https://stackoverflow.com/questions/640409/can-i-install-update-wordpress-plugins-without-providing-ftp-access
+define('FS_METHOD', 'direct');
+
 /**
  * The base configuration for WordPress
  *
