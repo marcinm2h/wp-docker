@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/marcinm2h/wp-docker.svg?token=fKQnZUT2NWo4wjBGfXEp&branch=master)](https://travis-ci.com/marcinm2h/wp-docker)
+
 # Requirements
 
 - Docker
