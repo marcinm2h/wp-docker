@@ -12,11 +12,14 @@
 - chose your config (.dev - remote database, or .prod - local database)
 - start project with `docker-compose up -d`
 
-# Deployment
+# Commiting + deployment
 
-- commit changes
-- push to origin
-- checkount on the new change on the server
+- create feature branch `git checkout -b my_feautre_branch_name`
+- create changes
+- commit changes `git commit -m "my feature"`
+- create pull request - push to origin `git push origin my_feature_branch_name`
+- merge pull request to master
+- ssh to remote server and pull `ssh root@vps_ip "cd /home/marcin/wp-docker/ && git pull"`
 
 # Docker help
 
