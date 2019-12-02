@@ -1,5 +1,4 @@
 <?php
-echo("production");
 /**
  * Dashboard Administration Screen
  *
