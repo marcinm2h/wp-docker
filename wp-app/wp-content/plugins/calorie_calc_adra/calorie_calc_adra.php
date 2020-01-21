@@ -111,4 +111,34 @@ function ccalc_exercises() {
         </script>
         ';
 }
+
+add_action('rest_api_init', function () {
+  register_rest_route( 'calorie-calc/v1', 'export', array(
+                'methods'  => 'GET',
+                'callback' => 'export_calc_data'
+      ));
+	  
+});
+function export_calc_data($request){
+	  $out = array_to_csv_download(array(
+		array(1,2,3,4), // this array is going to be the first row
+		array(1,2,3,4)), // this array is going to be the second row
+		"numbers.csv");
+	  return new WP_REST_Response(200, $out);
+	  }
+function array_to_csv_download($array, $filename = "export.csv", $delimiter=",") {
+    header('Content-Type: application/csv');
+    header('Content-Disposition: attachment; filename="'.$filename.'";');
+
+    // open the "output" stream
+    // see http://www.php.net/manual/en/wrappers.php.php#refsect2-wrappers.php-unknown-unknown-unknown-descriptioq
+    $f = fopen('php://output', 'w');
+
+    foreach ($array as $line) {
+        fputcsv($f, $line, $delimiter);
+    }
+	$f = fclose();
+	return $f;
+}   
+   
 ?>
