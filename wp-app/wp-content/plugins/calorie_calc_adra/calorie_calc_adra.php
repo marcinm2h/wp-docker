@@ -8,7 +8,7 @@
  */
  
  /**
- * Tworzy tabele bazy danych dla pluginu
+ * Creates tables in database
  * 
  * @global $wpdb
  */
@@ -39,7 +39,7 @@ function ccalc_install() {
 register_activation_hook(__FILE__, 'ccalc_install');
 
 /**
- * Usuwa tabele bazy danych
+ * Delete tables from database
  *
  * @global $wpdb $wpdb
  */
@@ -53,7 +53,7 @@ function ccalc_uninstall() {
 register_deactivation_hook(__FILE__, 'ccalc_uninstall');
 
 /**
- * Dodaje pozycje do menu w PA
+ * Adds menu positions in admin panel
  */
 function ccalc_plugin_menu() {
     add_menu_page('Calorie Calculator', 'Calorie Calculator', 'administrator', 'ccalc_settings');
@@ -114,18 +114,33 @@ function ccalc_exercises() {
 
 add_action('rest_api_init', function () {
   register_rest_route( 'calorie-calc/v1', 'export', array(
-                'methods'  => 'GET',
+                'methods'  => 'POST',
                 'callback' => 'export_calc_data'
       ));
 	  
 });
+
+/* Create API for export exercises data
+ * $request - json format:
+				"exercises: : [
+					{ 
+						"name" : "exercise_name", 
+						"time: : "time_in_minutes", 
+						"kcal" : "kcal"
+					}
+				]
+ */
 function export_calc_data($request){
-	  $out = array_to_csv_download(array(
-		array(1,2,3,4), // this array is going to be the first row
-		array(1,2,3,4)), // this array is going to be the second row
-		"numbers.csv");
-	  return new WP_REST_Response(200, $out);
-	  }
+	$out = array(array('id','name','time','kcal'));
+	$id = 1;
+	foreach($request['exercises'] as $ex) {
+		array_push($out, array($id, $ex['name'],$ex['time'],$ex['kcal']));
+		$id++;
+	}
+	return new WP_REST_Response(200, array_to_csv_download($out,"numbers.csv"));
+
+	}
+
 function array_to_csv_download($array, $filename = "export.csv", $delimiter=",") {
     header('Content-Type: application/csv');
     header('Content-Disposition: attachment; filename="'.$filename.'";');
