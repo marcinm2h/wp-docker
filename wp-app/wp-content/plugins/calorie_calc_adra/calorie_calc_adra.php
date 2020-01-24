@@ -25,7 +25,7 @@ function ccalc_install() {
     if ($wpdb->get_var("SHOW TABLES LIKE '" . $ccalc_tablename . "'") != $ccalc_tablename) {
         $query = "CREATE TABLE " . $ccalc_tablename . " ( 
         id int(9) NOT NULL AUTO_INCREMENT, 
-        exercise varchar(250) NOT NULL,  
+        exercise TEXT NOT NULL,  
         kcal int(9) NOT NULL,  
         PRIMARY KEY  (id)
         )";
