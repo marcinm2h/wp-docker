@@ -116,7 +116,7 @@ function ccalc_exercises() {
  *	POST /calorie-calc/v1/export - export exercises data to CSV file
  */
 add_action('rest_api_init', function() {
-  register_rest_route( 'calorie-calc/v1', 'list', array(
+  register_rest_route('calorie-calc/v1', 'list', array(
                 'methods'  => 'GET',
                 'callback' => 'get_calc_data'
       ));
@@ -124,7 +124,7 @@ add_action('rest_api_init', function() {
 });
 
 add_action('rest_api_init', function() {
-  register_rest_route( 'calorie-calc/v1', 'export', array(
+  register_rest_route('calorie-calc/v1', 'export', array(
                 'methods'  => 'POST',
                 'callback' => 'export_calc_data'
       ));
@@ -182,6 +182,15 @@ function array_to_csv_download($array, $filename = "export.csv", $delimiter = ",
     $resource = fclose();
 
 	return $resource;
-}   
-   
+}
+
+add_shortcode('ccalc_client', ccalc_render_client);
+function ccalc_render_client() {
+    $template = '<p>';
+    $template .= 'Test';
+    $template .= '</p>';
+
+    return $template;
+}
+
 ?>
