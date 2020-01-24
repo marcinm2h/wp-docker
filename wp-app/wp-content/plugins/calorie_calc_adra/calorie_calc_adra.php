@@ -1,25 +1,18 @@
 <?php
 /*
-  Plugin Name: WP calorie calculator created by Adrian Rajczyk
-  Version: 0.1
-  Description: Plugin adds calorie calculator
-  Author: Adrian Rajczyk
- */
- 
-/**
- * Creates tables in database
- * 
- * @global $wpdb
+  Plugin Name: WP calorie calculator created by Adrian Rajczyk and Marcin Moch
+  Version: 0.1.1
+  Description: Calorie calculator
+  Author: Adrian Rajczyk and Marcin Moch
  */
 
-define( 'RMLC_PATH', plugin_dir_path( __FILE__ ) );
-require RMLC_PATH.'model/calorie_calc.php';
+define('RMLC_PATH', plugin_dir_path( __FILE__));
+require RMLC_PATH . 'model/calorie_calc.php';
 
 function ccalc_install() {
     global $wpdb;
     $prefix = $wpdb->prefix;
     $ccalc_tablename = $prefix . "calorie_calc";
- 
     $ccalc_db_version = "1.0";
  
     if ($wpdb->get_var("SHOW TABLES LIKE '" . $ccalc_tablename . "'") != $ccalc_tablename) {
@@ -37,11 +30,6 @@ function ccalc_install() {
 }
 register_activation_hook(__FILE__, 'ccalc_install');
 
-/**
- * Delete tables from database
- *
- * @global $wpdb $wpdb
- */
 function ccalc_uninstall() {
     global $wpdb;
     $prefix = $wpdb->prefix;
@@ -51,17 +39,27 @@ function ccalc_uninstall() {
 }
 register_deactivation_hook(__FILE__, 'ccalc_uninstall');
 
-/**
- * Adds menu positions in admin panel
- */
 function ccalc_plugin_menu() {
-    add_menu_page('Calorie Calculator', 'Calorie Calculator', 'administrator', 'ccalc_exercises');
-	add_submenu_page('ccalc_settings', __('Exercises'),  __('Exercises'), 'edit_posts', 'ccalc_exercises', 'ccalc_exercises', null);
+    add_menu_page(
+        'Calorie Calculator',
+        'Calorie Calculator',
+        'administrator', // FIXME: admin || consultant
+        'ccalc_exercises'
+    );
+	add_submenu_page(
+        'ccalc_settings',
+        __('Exercises'),
+        __('Exercises'),
+        'edit_posts',
+        'ccalc_exercises',
+        'ccalc_exercises',
+        null
+    );
 }
 add_action('admin_menu', 'ccalc_plugin_menu');
 
 function ccalc_exercises() {
-    $model=new CalorieCalc();
+    $model = new CalorieCalc();
     if (isset($_POST['ccalc_exercises'])) {
         $model->deleteAll();
         foreach ($_POST['ccalc_exercises'] as $exc) {
@@ -75,7 +73,7 @@ function ccalc_exercises() {
     echo '<table class="form-table" style="width:auto;" cellpadding="10">
         <thead>
         <tr>
-        <td>' . __('Exercise') . '</td><td>' . __('Kcal') . '</td><td>' . __('Delete') . '</td>
+        <td>' . __('exercise') . '</td><td>' . __('kcal/min') . '</td><td>' . __('delete') . '</td>
         </tr>
         </thead>
         <tbody class="items">';
@@ -95,20 +93,20 @@ function ccalc_exercises() {
      
     echo '
         <script type="text/javascript">
-        jQuery(document).ready(function($) {
-        $("table .delete").click(function() {
-        $(this).parent().parent().remove();
-        return false;
-        });
-        $("table .add").click(function() {
-        var count = $("tbody.items tr").length+1;
-        var code=\'<tr><td><input type="text" name="ccalc_exercises[\'+count+\'][exercise]" /></td><td><input type="text" name="ccalc_exercises[\'+count+\'][kcal]" /></td><td><a class="delete" href="">' . __('Delete') . '</a></td></tr>\';
-        $("tbody.items").append(code);
-        return false;
-        });
-        });
+            jQuery(document).ready(function($) {
+            $("table .delete").click(function() {
+            $(this).parent().parent().remove();
+            return false;
+            });
+            $("table .add").click(function() {
+            var count = $("tbody.items tr").length+1;
+            var code=\'<tr><td><input type="text" name="ccalc_exercises[\'+count+\'][exercise]" /></td><td><input type="text" name="ccalc_exercises[\'+count+\'][kcal]" /></td><td><a class="delete" href="">' . __('Delete') . '</a></td></tr>\';
+            $("tbody.items").append(code);
+            return false;
+            });
+            });
         </script>
-        ';
+    ';
 }
 
 
@@ -117,7 +115,7 @@ function ccalc_exercises() {
  *	GET  /calorie-calc/v1/list - get current exercises with kcal per hour
  *	POST /calorie-calc/v1/export - export exercises data to CSV file
  */
-add_action('rest_api_init', function () {
+add_action('rest_api_init', function() {
   register_rest_route( 'calorie-calc/v1', 'list', array(
                 'methods'  => 'GET',
                 'callback' => 'get_calc_data'
@@ -125,7 +123,7 @@ add_action('rest_api_init', function () {
 	  
 });
 
- add_action('rest_api_init', function () {
+add_action('rest_api_init', function() {
   register_rest_route( 'calorie-calc/v1', 'export', array(
                 'methods'  => 'POST',
                 'callback' => 'export_calc_data'
@@ -144,7 +142,7 @@ add_action('rest_api_init', function () {
  *  }
  *]
  */
- function get_calc_data (){
+function get_calc_data (){
 	$model=new CalorieCalc();
 	$result=$model->getAll();
     return new WP_REST_Response($result, 200);
@@ -162,29 +160,28 @@ add_action('rest_api_init', function () {
   *			]
   */
 function export_calc_data($request){
-	$out = array(array('id','name','time','kcal'));
-	$id = 1;
-	foreach($request['exercises'] as $ex) {
-		array_push($out, array($id, $ex['name'],$ex['time'],$ex['kcal']));
-		$id++;
-	}
-	$result = array_to_csv_download($out,"exercises.csv");
-	return new WP_REST_Response($result, 200);
+    $header = array('id', 'name', 'time', 'kcal');
+	$out = array($header);
+    $id = 0;
 
-	}
-
-function array_to_csv_download($array, $filename = "export.csv", $delimiter=",") {
-    header('Content-Type: application/csv');
-    header('Content-Disposition: attachment; filename="'.$filename.'";');
-
-    $f = fopen('php://output', 'w');
-
-    foreach ($array as $line) {
-        fputcsv($f, $line, $delimiter);
+	foreach($request['exercises'] as $exercise) {
+		array_push($out, array(++$id, $exercise['name'],$exercise['time'],$exercise['kcal']));
     }
-	
-	$f = fclose();
-	return $f;
+
+	return new WP_REST_Response(array_to_csv_download($out, "exercises.csv"), 200);
+}
+
+function array_to_csv_download($array, $filename = "export.csv", $delimiter = ",") {
+    header('Content-Type: application/csv');
+    header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+    $resource = fopen('php://output', 'w');
+    foreach ($array as $line) {
+        fputcsv($resource, $line, $delimiter);
+    }
+    $resource = fclose();
+
+	return $resource;
 }   
    
 ?>
