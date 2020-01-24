@@ -4,15 +4,14 @@
   Version: 0.1
   Description: Plugin adds calorie calculator
   Author: Adrian Rajczyk
-
  */
  
- /**
+/**
  * Creates tables in database
  * 
  * @global $wpdb
  */
- 
+
 define( 'RMLC_PATH', plugin_dir_path( __FILE__ ) );
 require RMLC_PATH.'model/calorie_calc.php';
 
@@ -56,7 +55,7 @@ register_deactivation_hook(__FILE__, 'ccalc_uninstall');
  * Adds menu positions in admin panel
  */
 function ccalc_plugin_menu() {
-    add_menu_page('Calorie Calculator', 'Calorie Calculator', 'administrator', 'ccalc_settings');
+    add_menu_page('Calorie Calculator', 'Calorie Calculator', 'administrator', 'ccalc_exercises');
 	add_submenu_page('ccalc_settings', __('Exercises'),  __('Exercises'), 'edit_posts', 'ccalc_exercises', 'ccalc_exercises', null);
 }
 add_action('admin_menu', 'ccalc_plugin_menu');
@@ -112,7 +111,21 @@ function ccalc_exercises() {
         ';
 }
 
+
+/**
+ *	API
+ *	GET  /calorie-calc/v1/list - get current exercises with kcal per hour
+ *	POST /calorie-calc/v1/export - export exercises data to CSV file
+ */
 add_action('rest_api_init', function () {
+  register_rest_route( 'calorie-calc/v1', 'list', array(
+                'methods'  => 'GET',
+                'callback' => 'get_calc_data'
+      ));
+	  
+});
+
+ add_action('rest_api_init', function () {
   register_rest_route( 'calorie-calc/v1', 'export', array(
                 'methods'  => 'POST',
                 'callback' => 'export_calc_data'
@@ -120,16 +133,34 @@ add_action('rest_api_init', function () {
 	  
 });
 
-/* Create API for export exercises data
- * $request - json format:
-				"exercises: : [
-					{ 
-						"name" : "exercise_name", 
-						"time: : "time_in_minutes", 
-						"kcal" : "kcal"
-					}
-				]
+/**
+ * Create API for get exercises from database
+ * $result - json in format:
+ *[
+ *  {
+ *    "id": "1",
+ *    "exercise": "test",
+ *    "kcal": "4542"
+ *  }
+ *]
  */
+ function get_calc_data (){
+	$model=new CalorieCalc();
+	$result=$model->getAll();
+    return new WP_REST_Response($result, 200);
+ }
+ 
+ /**
+  * Create API for export exercises data
+  * $request - json format:
+  *			"exercises: : [
+  *				{ 
+  *					"name" : "exercise_name", 
+  *					"time: : "time_in_minutes", 
+  *					"kcal" : "kcal"
+  *				}
+  *			]
+  */
 function export_calc_data($request){
 	$out = array(array('id','name','time','kcal'));
 	$id = 1;
@@ -137,7 +168,8 @@ function export_calc_data($request){
 		array_push($out, array($id, $ex['name'],$ex['time'],$ex['kcal']));
 		$id++;
 	}
-	return new WP_REST_Response(200, array_to_csv_download($out,"numbers.csv"));
+	$result = array_to_csv_download($out,"exercises.csv");
+	return new WP_REST_Response($result, 200);
 
 	}
 
@@ -145,13 +177,12 @@ function array_to_csv_download($array, $filename = "export.csv", $delimiter=",")
     header('Content-Type: application/csv');
     header('Content-Disposition: attachment; filename="'.$filename.'";');
 
-    // open the "output" stream
-    // see http://www.php.net/manual/en/wrappers.php.php#refsect2-wrappers.php-unknown-unknown-unknown-descriptioq
     $f = fopen('php://output', 'w');
 
     foreach ($array as $line) {
         fputcsv($f, $line, $delimiter);
     }
+	
 	$f = fclose();
 	return $f;
 }   

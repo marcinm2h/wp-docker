@@ -1,8 +1,8 @@
 <?php
 /**
- * Model pluginu
+ * Database model
  *
- * @author Adrian Rajczyk>
+ * @author Adrian Rajczyk
  */
 class CalorieCalc {
  
@@ -17,9 +17,9 @@ class CalorieCalc {
     }
  
     /**
-     * Pobiera wszystkie pozycje
+     * Get all records from database
      * @global $wpdb $wpdb
-     * @return array Tablica
+     * @return array
      */
     public function getAll() {
         $query = "SELECT * FROM  " . $this->tableName . " ORDER BY id DESC;";
@@ -27,7 +27,7 @@ class CalorieCalc {
     }
  
     /**
-     * Dodaje pozycje
+     * Insert new record to database
      * @global $wpdb $wpdb
      * @param array $data
      */
@@ -36,7 +36,7 @@ class CalorieCalc {
     }
  
     /**
-     * Usuwa wszystkie pozycje
+     * Delete all records from database
      * @global $wpdb $wpdb
      */
     public function deleteAll() {
