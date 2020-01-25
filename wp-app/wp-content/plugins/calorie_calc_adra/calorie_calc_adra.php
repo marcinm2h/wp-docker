@@ -143,8 +143,9 @@ add_action('rest_api_init', function() {
  *]
  */
 function get_calc_data (){
-	$model=new CalorieCalc();
-	$result=$model->getAll();
+	$model = new CalorieCalc();
+    $result = $model->getAll();
+
     return new WP_REST_Response($result, 200);
  }
  
@@ -186,11 +187,25 @@ function array_to_csv_download($array, $filename = "export.csv", $delimiter = ",
 
 add_shortcode('ccalc_client', ccalc_render_client);
 function ccalc_render_client() {
-    $template = '<p>';
-    $template .= 'Test';
-    $template .= '</p>';
+    // fetch('/?rest_route=/calorie-calc/v1/list').then(resp => resp.json()).then(json => console.log(json))
+    // postData('/?rest_route=/calorie-calc/v1/export', {
+    //     exercises: [{ name: 'skakanka', time: 12, kcal: 100 }]
+    //   }).then(data => console.log(data))
+    // [skakanka (100kcal/min)], [bieg (100kcal/min)], [sprint (300kcal/min)]
+    //
+    // SKAKANKA   -   10min  1000kcal   [ - ]
+    // BIEG       -   2min   200kcal    [ - ]
+    // --------------------
+    // SUMA       -  12min   1200kcal
+
+    $template = '<div id="ccalc_root" />';
+    
+    wp_enqueue_script('preact/htm', 'https://unpkg.com/htm@3.0.1/preact/standalone.umd.js');
+
+    wp_enqueue_script('ccalc-client-js', plugins_url('client/index.js', __FILE__));
 
     return $template;
 }
+
 
 ?>
