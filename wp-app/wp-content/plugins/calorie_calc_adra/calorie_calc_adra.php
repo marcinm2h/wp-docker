@@ -161,12 +161,21 @@ function get_calc_data (){
   *			]
   */
 function export_calc_data($request){
-    $header = array('id', 'name', 'time', 'kcal');
+    $header = array('id', 'name', 'minutes', 'kcal/min', 'kcal');
 	$out = array($header);
     $id = 0;
 
 	foreach($request['exercises'] as $exercise) {
-		array_push($out, array(++$id, $exercise['name'],$exercise['time'],$exercise['kcal']));
+		array_push(
+            $out,
+            array(
+                ++$id,
+                $exercise['name'],
+                $exercise['minutes'],
+                $exercise['kcal/min'],
+                $exercise['kcal']
+            )
+        );
     }
 
 	return new WP_REST_Response(array_to_csv_download($out, "exercises.csv"), 200);
@@ -192,9 +201,7 @@ function ccalc_render_client() {
     //   })
 
     $template = '<div id="ccalc_root" />';
-    
     wp_enqueue_script('preact/htm', 'https://unpkg.com/htm@3.0.1/preact/standalone.umd.js');
-
     wp_enqueue_script('ccalc-client-js', plugins_url('client/index.js', __FILE__));
 
     return $template;

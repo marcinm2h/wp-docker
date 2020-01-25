@@ -8,7 +8,6 @@ class AddButton extends Component {
   }
 }
 
-
 class PlanItem extends Component {
   render({ exercise, kcal, minutes, onRemove, onMinutesChange, ...props }) {
     return html`
@@ -26,8 +25,6 @@ class PlanItem extends Component {
       `;
   }
 }
-
-// TODO: download: plan.map().then(p => formFromData(p)).submit()
 
 class CalorieCalculator extends Component {
   state = {
@@ -66,12 +63,26 @@ class CalorieCalculator extends Component {
     }), { minutes: 0, kcal: 0 })
   }
 
+  exportToCsv() {
+    const data = {
+      exercises: this.state.plan.map(item => ({
+        name: item.exercise,
+        minutes: item.minutes,
+        'kcal/min': item.kcal,
+        kcal: item.kcal * item.minutes
+      }))
+    };
+
+    api.exportToCsv(data)
+  }
+
   render({ exercises = [] }, { plan = [] }) {
     const summary = this.generateSummary();
 
     return html`
       <div>
       <h3>Dodaj ćwiczenie</h3>
+      <pre>${JSON.stringify(plan, null, 2)}</pre>
       <div>
         ${exercises.map(exercise => html`
           <${AddButton}
@@ -102,7 +113,7 @@ class CalorieCalculator extends Component {
           <label>
             Kalorii łączne: <input disabled value=${summary.kcal} />
           </label>
-          <button>Eskportuj do CSV</button>
+          <button onClick=${e => this.exportToCsv()}>Eskportuj do CSV</button>
         `
       ) : null}
       </div>
@@ -114,7 +125,15 @@ class CalorieCalculator extends Component {
 const API_URL = '/?rest_route=/calorie-calc/v1';
 
 const api = {
-  getExercises: () => fetch(`${API_URL}/list`).then(resp => resp.json())
+  getExercises: () => fetch(`${API_URL}/list`).then(resp => resp.json()),
+  exportToCsv: (data) =>
+    fetch(`${API_URL}/export`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(resp => resp.text())
 };
 
 api.getExercises()
