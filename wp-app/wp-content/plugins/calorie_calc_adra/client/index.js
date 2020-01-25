@@ -35,6 +35,7 @@ class PlanItem extends Component {
 
 class CalorieCalculator extends Component {
   constructor() {
+    super();
     this.state = {
       uuid: 0,
       plan: []

@@ -207,7 +207,7 @@ function array_to_csv_download($array, $filename = "export.csv", $delimiter = ",
 }
 
 function ccalc_render_client() {
-    $template = '<div id="ccalc_root" />';
+    $template = '<div id="ccalc_root"></div>';
     wp_enqueue_script('preact/htm', 'https://unpkg.com/htm@3.0.1/preact/standalone.umd.js');
     wp_enqueue_script('ccalc-client-js', plugins_url('client/index.js', __FILE__));
 
