@@ -27,9 +27,7 @@ class PlanItem extends Component {
             min="0"
             onInput=${e => onMinutesChange(Number(e.target.value))}
           /> min
-        </label>
-        ${ minutes ? minutes * kcal : undefined} kcal
-        <button onClick=${e => onRemove()}>usuń</button>
+        </label> <button onClick=${e => onRemove()}>usuń</button> ${ minutes ? `${minutes * kcal} kcal` : null}
       </li>
       `;
   }
