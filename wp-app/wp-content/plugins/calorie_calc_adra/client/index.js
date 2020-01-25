@@ -27,7 +27,7 @@ class PlanItem extends Component {
   }
 }
 
-// TODO: pobieranie przez a.download
+// TODO: download: plan.map().then(p => formFromData(p)).submit()
 
 class CalorieCalculator extends Component {
   state = {
