@@ -1,5 +1,14 @@
 const { render, html, Component } = window.htmPreact;
 
+const download = (filename, text) => {
+  const element = document.createElement('a');
+  element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`);
+  element.setAttribute('download', filename);
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+};
+
 class AddButton extends Component {
   render({ exercise, kcal, onClick, ...props }) {
     return html`
@@ -73,7 +82,9 @@ class CalorieCalculator extends Component {
       }))
     };
 
-    api.exportToCsv(data)
+    api.exportToCsv(data).then(csv => {
+      download('export.csv', csv);
+    });
   }
 
   render({ exercises = [] }, { plan = [] }) {
@@ -82,7 +93,6 @@ class CalorieCalculator extends Component {
     return html`
       <div>
       <h3>Dodaj ćwiczenie</h3>
-      <pre>${JSON.stringify(plan, null, 2)}</pre>
       <div>
         ${exercises.map(exercise => html`
           <${AddButton}
