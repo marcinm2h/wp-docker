@@ -1,6 +1,6 @@
 <?php
 /*
-  Plugin Name: WP calorie calculator created by Adrian Rajczyk and Marcin Moch
+  Plugin Name: WP calorie calculator
   Version: 0.1.1
   Description: Calorie calculator
   Author: Adrian Rajczyk and Marcin Moch
@@ -8,6 +8,15 @@
 
 define('RMLC_PATH', plugin_dir_path( __FILE__));
 require RMLC_PATH . 'model/calorie_calc.php';
+
+$capability = 'ccalc_admin';
+
+function add_ccalc_capability($role_name) {
+    $role = get_role($role_name);
+    if ($role) {
+        $role->add_cap($capability, true );
+    }
+}
 
 function ccalc_install() {
     global $wpdb;
@@ -27,6 +36,9 @@ function ccalc_install() {
  
         add_option("ccalc_db_version", $ccalc_db_version);
     }
+    foreach (array("administrator", "consultant") as $role) {
+        add_ccalc_capability($role);
+    }
 }
 register_activation_hook(__FILE__, 'ccalc_install');
 
@@ -43,7 +55,7 @@ function ccalc_plugin_menu() {
     add_menu_page(
         'Calorie Calculator',
         'Calorie Calculator',
-        'administrator', // FIXME: admin || consultant
+        $capability,
         'ccalc_exercises'
     );
 	add_submenu_page(
@@ -194,18 +206,13 @@ function array_to_csv_download($array, $filename = "export.csv", $delimiter = ",
 	return $resource;
 }
 
-add_shortcode('ccalc_client', ccalc_render_client);
 function ccalc_render_client() {
-    // postData('/?rest_route=/calorie-calc/v1/export', {
-    //     exercises: [{ name: 'skakanka', time: 12, kcal: 100 }]
-    //   })
-
     $template = '<div id="ccalc_root" />';
     wp_enqueue_script('preact/htm', 'https://unpkg.com/htm@3.0.1/preact/standalone.umd.js');
     wp_enqueue_script('ccalc-client-js', plugins_url('client/index.js', __FILE__));
 
     return $template;
 }
-
+add_shortcode('ccalc_client', ccalc_render_client);
 
 ?>
